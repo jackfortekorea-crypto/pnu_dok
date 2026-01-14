@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>독도: 주권의 역사 인터렉티브 리포트</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F8FAFC;
+            color: #1E293B;
+            overflow-x: hidden;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            height: 300px;
+        }
+        /* Horizontal Timeline Styling */
+        .timeline-wrapper {
+            display: flex;
+            overflow-x: auto;
+            padding: 40px 0;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        .timeline-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        .timeline-wrapper::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+        .timeline-item {
+            flex: 0 0 160px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #E2E8F0;
+            z-index: 1;
+        }
+        .timeline-item:last-child::after { display: none; }
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            background: #CBD5E1;
+            border-radius: 50%;
+            z-index: 2;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            border: 3px solid white;
+            box-shadow: 0 0 0 1px #E2E8F0;
+        }
+        .timeline-item.active .timeline-dot {
+            background: #1E3A8A;
+            transform: scale(1.5);
+            box-shadow: 0 0 15px rgba(30, 58, 138, 0.4);
+        }
+        .timeline-year {
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: #64748B;
+            transition: color 0.3s ease;
+        }
+        .timeline-item.active .timeline-year {
+            color: #1E3A8A;
+            font-size: 1rem;
+        }
+        /* Glassmorphism Effect */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <!-- Nav -->
+    <nav class="glass-panel sticky top-0 z-50 px-6 py-4 flex justify-between items-center border-b border-slate-200">
+        <div class="flex items-center gap-4">
+            <!-- Home Button -->
+            <a href="index.html" class="flex items-center justify-center w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-600 transition-colors" title="홈으로 이동">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </a>
+            <div class="flex items-center gap-2 border-l border-slate-200 pl-4">
+                <div class="w-8 h-8 bg-blue-900 rounded-lg flex items-center justify-center text-white font-bold italic">D</div>
+                <span class="text-xl font-bold tracking-tight text-slate-800">독도: 주권의 연표</span>
+            </div>
+        </div>
+        <div class="hidden md:flex gap-6 text-sm font-medium text-slate-500">
+            <a href="#visual-timeline" class="hover:text-blue-900">타임라인</a>
+            <a href="#stats" class="hover:text-blue-900">데이터 분석</a>
+            <a href="#insights" class="hover:text-blue-900">핵심 의미</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="relative py-20 px-6 overflow-hidden bg-white">
+        <div class="max-w-5xl mx-auto text-center relative z-10">
+            <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold mb-4 uppercase tracking-widest">Historical Sovereignty</span>
+            <h1 class="text-5xl md:text-6xl font-black text-slate-900 mb-6 leading-tight">역사의 파도를 넘어,<br><span class="text-blue-900 underline decoration-amber-500 underline-offset-8">우리 땅 독도</span></h1>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                수백 년의 기록과 증거가 말해주는 독도의 진실. <br>
+                연도별 타임라인을 통해 주권 수호의 발자취를 직접 따라가 보세요.
+            </p>
+        </div>
+        <!-- Decorative elements -->
+        <div class="absolute top-0 right-0 w-96 h-96 bg-blue-50 rounded-full -mr-20 -mt-20 blur-3xl opacity-50"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-amber-50 rounded-full -ml-10 -mb-10 blur-3xl opacity-50"></div>
+    </section>
+
+    <!-- Visual Timeline Axis -->
+    <section id="visual-timeline" class="py-12 bg-slate-50 border-y border-slate-200">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">역사 축 탐색</h2>
+                    <p class="text-slate-500 text-sm">연도를 드래그하거나 클릭하여 역사의 순간으로 이동하세요.</p>
+                </div>
+                <div class="flex gap-2 text-xs">
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 bg-blue-900 rounded-full"></span> 조선/대한</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 bg-amber-500 rounded-full"></span> 일제/분쟁</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 bg-slate-400 rounded-full"></span> 해방/현대</span>
+                </div>
+            </div>
+            
+            <div id="timeline-axis" class="timeline-wrapper no-scrollbar">
+                <!-- Javascript populate -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Detail Display Section -->
+    <section class="py-12 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div id="detail-card" class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden transform transition-all duration-500">
+                <div class="md:flex">
+                    <!-- Left: Year Highlight -->
+                    <div id="card-sidebar" class="md:w-1/3 bg-blue-900 p-10 text-white flex flex-col justify-between transition-colors duration-500">
+                        <div>
+                            <div id="card-era" class="text-blue-200 text-xs font-bold tracking-widest uppercase mb-2">ERA NAME</div>
+                            <div id="card-year" class="text-6xl font-black mb-4 tracking-tighter">1454</div>
+                        </div>
+                        <div class="text-sm text-blue-100/60 font-light italic">
+                            * 본 내용은 국가 기록물 및 관찬 지리지를 바탕으로 합니다.
+                        </div>
+                    </div>
+                    <!-- Right: Detailed Info -->
+                    <div class="md:w-2/3 p-10">
+                        <div id="card-type" class="inline-block px-2 py-1 bg-slate-100 text-slate-500 rounded text-[10px] font-bold mb-4">TYPE</div>
+                        <h3 id="card-title" class="text-3xl font-bold text-slate-800 mb-6 leading-tight">사건명</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-sm font-bold text-blue-900 mb-2 flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 bg-blue-900 rounded-full"></span> 내용 및 의미
+                                </h4>
+                                <p id="card-desc" class="text-slate-600 leading-relaxed text-lg">내용이 여기에 표시됩니다.</p>
+                            </div>
+                            <div class="pt-6 border-t border-slate-50 flex items-center justify-between">
+                                <div id="card-source" class="text-sm font-medium text-slate-400">출처: 세종실록지리지</div>
+                                <button onclick="nextEvent()" class="flex items-center gap-2 text-blue-900 font-bold text-sm hover:gap-3 transition-all">
+                                    다음 사건 보기 <span>→</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section id="stats" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900 mb-4 tracking-tight">수치로 보는 기록의 힘</h2>
+                    <p class="text-slate-600 mb-8">독도가 우리 영토임을 증명하는 기록은 단순한 주장을 넘어, 국가 공문서와 지도로써 방대한 양이 축적되어 왔습니다.</p>
+                    <div class="space-y-4">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <div class="text-xs font-bold text-slate-400 mb-1 uppercase">가장 빈번한 기록 유형</div>
+                            <div class="text-xl font-bold text-slate-800">공문서 및 법령 (33%)</div>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <div class="text-xs font-bold text-slate-400 mb-1 uppercase">조선시대 영토 기록</div>
+                            <div class="text-xl font-bold text-slate-800">전체 기록의 약 45%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 gap-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        <h4 class="text-center font-bold text-slate-700 mb-4 text-sm">시기별 사건 밀도</h4>
+                        <div class="chart-container" style="height: 250px;">
+                            <canvas id="eraAnalysisChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Deep Insights Section -->
+    <section id="insights" class="py-20 bg-slate-50">
+        <div class="max-w-4xl mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-12">역사가 남긴 세 가지 명제</h2>
+            <div class="space-y-8">
+                <div class="flex gap-6 items-start p-8 bg-white rounded-3xl shadow-sm border border-slate-100">
+                    <div class="text-4xl">📘</div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2 text-slate-800">고유 영토의 입증</h3>
+                        <p class="text-slate-600 leading-relaxed">세종실록지리지(1454)부터 대한제국 칙령 제41호(1900)에 이르기까지, 한국은 독도를 자국 영토로 명확히 인식하고 행정적으로 관리해온 일관된 기록을 보유하고 있습니다.</p>
+                    </div>
+                </div>
+                <div class="flex gap-6 items-start p-8 bg-white rounded-3xl shadow-sm border border-slate-100">
+                    <div class="text-4xl">🚫</div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2 text-slate-800">일본의 자인(自認)</h3>
+                        <p class="text-slate-600 leading-relaxed">은주시청합기(1667)와 태정관 지령(1877)은 일본 스스로 독도가 자국 영토가 아님을 인정한 결정적 사료입니다. 이는 현대 일본의 주권 주장이 역사적 근거가 없음을 보여줍니다.</p>
+                    </div>
+                </div>
+                <div class="flex gap-6 items-start p-8 bg-white rounded-3xl shadow-sm border border-slate-100">
+                    <div class="text-4xl">🇰🇷</div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2 text-slate-800">실효적 지배와 수호</h3>
+                        <p class="text-slate-600 leading-relaxed">해방 후 SCAPIN 677호를 통해 주권을 회복한 이래, 독도의용수비대의 헌신과 평화선 선포를 통해 대한민국은 현재까지 독도를 완벽하게 지배하며 수호하고 있습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-900 py-12 px-6 text-center text-slate-500 text-sm">
+        <div class="max-w-4xl mx-auto">
+            <p class="mb-4">본 리포트는 독도 관련 역사적 사료 및 학술 보고서를 바탕으로 인터렉티브하게 재구성되었습니다.</p>
+            <div class="flex justify-center gap-4 mb-8">
+                <span class="px-2 py-1 bg-slate-800 rounded">독도수호</span>
+                <span class="px-2 py-1 bg-slate-800 rounded">역사교육</span>
+                <span class="px-2 py-1 bg-slate-800 rounded">대한민국 영토</span>
+            </div>
+            <p>© 2024 Dokdo Interactive History Archives</p>
+        </div>
+    </footer>
+
+    <script>
+        const timelineData = [
+            { year: 1454, event: "세종실록지리지", desc: "우산(독도)과 무릉(울릉도)이 강원도 울진현에 속한다고 기록됨. 우리 영토로서의 첫 공식 기록 중 하나입니다.", source: "[1]", type: "기록/문헌", era: "joseon", eraName: "조선 시대" },
+            { year: 1531, event: "신증동국여지승람", desc: "독도가 우리 영토임을 밝히는 관찬 지리지 편찬. 국가 차원의 영토 인식을 보여줍니다.", source: "[2]", type: "기록/문헌", era: "joseon", eraName: "조선 시대" },
+            { year: 1667, event: "은주시청합기", desc: "일본의 문헌. 울릉도와 독도가 일본 영토 밖(조선 땅)임을 일본 스스로 기록한 중요한 사료입니다.", source: "[3]", type: "일본측 기록", era: "joseon", eraName: "조선 시대" },
+            { year: 1693, event: "1차 안용복 사건", desc: "안용복이 일본으로 끌려가 독도가 조선 땅임을 강력하게 주장하여 주권 의식을 표명했습니다.", source: "[4]", type: "민간 항쟁", era: "joseon", eraName: "조선 시대" },
+            { year: 1696, event: "2차 안용복 사건", desc: "안용복이 일본에 건너가 불법 침범에 항의. 결국 일본 막부가 '울릉도 도해 금지령'을 내리는 성과를 거둡니다.", source: "[5]", type: "민간 항쟁", era: "joseon", eraName: "조선 시대" },
+            { year: 1785, event: "삼국접양지도", desc: "일본 하야시 시헤이 제작. 독도를 조선의 색인 황색으로 칠하고 '조선의 것'이라 명기했습니다.", source: "[6]", type: "고지도", era: "joseon", eraName: "조선 시대" },
+            { year: 1877, event: "태정관 지령", desc: "일본 최고 행정기관이 '독도와 울릉도는 일본과 관계없다'고 공식 결정하여 내린 지침입니다.", source: "[7]", type: "일본 공문서", era: "joseon", eraName: "조선 시대" },
+            { year: 1900, event: "대한제국 칙령 41호", desc: "고종 황제가 독도를 울릉군의 관할 구역으로 공식 반포하여 근대적 주권을 선포했습니다.", source: "[8]", type: "국가 법령", era: "joseon", eraName: "대한제국" },
+            { year: 1905, event: "시마네현 고시 40호", desc: "일본이 러일전쟁 중 독도를 불법적으로 '다케시마'로 편입시킨 침탈 행위입니다.", source: "[9]", type: "영토 침탈", era: "occupation", eraName: "일제 강점기" },
+            { year: 1906, event: "심흥택 보고서", desc: "울릉군수 심흥택이 독도 침탈 소식을 듣고 본국 정부에 '본군 소속 독도'라며 긴급 보고했습니다.", source: "[8]", type: "보고서", era: "occupation", eraName: "일제 강점기" },
+            { year: 1946, event: "SCAPIN 제677호", desc: "연합군최고사령관 지령. 독도를 일본의 통치권 및 행정권에서 공식 제외하여 한국에 반환했습니다.", source: "[10]", type: "국제 지령", era: "modern", eraName: "해방 직후" },
+            { year: 1951, event: "샌프란시스코 강화조약", desc: "일본이 한국의 독립을 인정. 독도 명시 누락이 향후 분쟁의 불씨가 되었습니다.", source: "[11]", type: "국제 조약", era: "modern", eraName: "현대" },
+            { year: 1952, event: "평화선 선포", desc: "이승만 대통령이 독도를 포함한 인접 해양 주권을 선언하여 실효적 지배를 공고히 했습니다.", source: "[12]", type: "국가 선언", era: "modern", eraName: "현대" },
+            { year: 1953, event: "독도의용수비대 활동", desc: "민간인들이 독도에 상주하며 일본의 침범을 몸소 막아낸 숭고한 수호 활동입니다.", source: "[13]", type: "민간 수호", era: "modern", eraName: "현대" },
+            { year: 2005, event: "다케시마의 날 제정", desc: "일본 시마네현이 2월 22일을 기념일로 제정하여 독도 도발을 노골화했습니다.", source: "[17]", type: "영토 도발", era: "modern", eraName: "현대" },
+            { year: 2011, event: "일본 교과서 왜곡", desc: "일본 중학교 교과서 다수에 독도 영유권 주장을 기술하여 역사 왜곡을 본격화했습니다.", source: "[18]", type: "교육 왜곡", era: "modern", eraName: "현대" }
+        ];
+
+        let currentIndex = 0;
+        const timelineAxis = document.getElementById('timeline-axis');
+        const cardYear = document.getElementById('card-year');
+        const cardEra = document.getElementById('card-era');
+        const cardTitle = document.getElementById('card-title');
+        const cardDesc = document.getElementById('card-desc');
+        const cardSource = document.getElementById('card-source');
+        const cardType = document.getElementById('card-type');
+        const cardSidebar = document.getElementById('card-sidebar');
+
+        window.onload = () => {
+            renderTimelineAxis();
+            updateDetail(0);
+            initCharts();
+        };
+
+        function renderTimelineAxis() {
+            timelineData.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = `timeline-item ${index === 0 ? 'active' : ''}`;
+                div.id = `item-${index}`;
+                div.innerHTML = `
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">${item.year}</div>
+                `;
+                div.onclick = () => updateDetail(index);
+                timelineAxis.appendChild(div);
+            });
+        }
+
+        function updateDetail(index) {
+            currentIndex = index;
+            const data = timelineData[index];
+            document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`item-${index}`).classList.add('active');
+            const item = document.getElementById(`item-${index}`);
+            timelineAxis.scrollTo({
+                left: item.offsetLeft - (timelineAxis.offsetWidth / 2) + (item.offsetWidth / 2),
+                behavior: 'smooth'
+            });
+            const card = document.getElementById('detail-card');
+            card.style.opacity = '0.5';
+            card.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                cardYear.innerText = data.year;
+                cardEra.innerText = data.eraName;
+                cardTitle.innerText = data.event;
+                cardDesc.innerText = data.desc;
+                cardSource.innerText = `출처: ${data.source}`;
+                cardType.innerText = data.type;
+                if (data.era === 'joseon') cardSidebar.className = 'md:w-1/3 bg-blue-900 p-10 text-white flex flex-col justify-between transition-all';
+                else if (data.era === 'occupation') cardSidebar.className = 'md:w-1/3 bg-amber-600 p-10 text-white flex flex-col justify-between transition-all';
+                else cardSidebar.className = 'md:w-1/3 bg-slate-700 p-10 text-white flex flex-col justify-between transition-all';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 200);
+        }
+
+        function nextEvent() {
+            updateDetail((currentIndex + 1) % timelineData.length);
+        }
+
+        function initCharts() {
+            const eraCounts = { joseon: 0, occupation: 0, modern: 0 };
+            timelineData.forEach(d => eraCounts[d.era]++);
+            const ctx = document.getElementById('eraAnalysisChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['조선/대한제국', '일제 강점기', '해방/현대'],
+                    datasets: [{
+                        label: '주요 기록/사건 수',
+                        data: [eraCounts.joseon, eraCounts.occupation, eraCounts.modern],
+                        backgroundColor: ['#1E3A8A', '#D97706', '#475569'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#F1F5F9' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
