@@ -4,28 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>독도 영유권 역사 타임라인</title>
+    <!-- External Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
-
     
-    <!-- Chosen Palette: Heritage Deep (Navy, Gold, Ivory) -->
-    <!-- Application Structure Plan: 
-         1. Hero Section: 시각적 임팩트를 주는 타이틀과 요약 정보.
-         2. Analysis Dashboard: 시대별 데이터 비중 시각화.
-         3. Vertical Interactive Timeline: 스크롤 애니메이션과 좌우 교차 배치를 통한 연도별 기록 탐색.
-         4. Event Details: 각 카드 클릭 시 강조되는 인터랙션.
-         5. Navigation Update: 상단 바에 index.html로 이동하는 홈 버튼 추가.
-    -->
-    <!-- Visualization & Content Choices:
-         1. Doughnut Chart: 시대별 기록 분포를 한눈에 파악.
-         2. Intersection Observer JS: 스크롤 시 카드가 서서히 나타나는 효과 구현.
-         3. Dynamic Filter: 특정 시대로 즉시 이동하는 네비게이션.
-         4. Home Button: 텍스트와 유니코드 아이콘을 조합하여 시인성 확보.
-         Confirmation: NO SVG graphics used. NO Mermaid JS used.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
@@ -49,7 +32,6 @@
             .timeline-line::before { left: 30px; }
         }
         
-        /* Dot on the line */
         .timeline-dot {
             position: absolute;
             left: 50%;
@@ -73,7 +55,6 @@
             margin: 0 auto;
         }
         
-        /* Animation Classes */
         .reveal {
             opacity: 0;
             transform: translateY(30px);
@@ -122,9 +103,6 @@
         <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 grid grid-cols-1 lg:grid-cols-3 gap-12 items-center border border-gray-100">
             <div class="lg:col-span-1">
                 <h2 class="text-2xl font-bold mb-4 serif text-slate-800">역사적 사료 분석</h2>
-                <p class="text-gray-500 mb-8 leading-relaxed">
-                    수 세기에 걸친 방대한 관찬 사료와 지도는 독도가 대한민국 영토임을 일관되게 입증하고 있습니다. 
-                </p>
                 <div class="space-y-4">
                     <div class="flex items-center justify-between p-4 bg-emerald-50 rounded-2xl border border-emerald-100 transition-transform hover:scale-105">
                         <div class="flex items-center">
@@ -153,49 +131,33 @@
                 <div class="chart-container">
                     <canvas id="historyChart"></canvas>
                 </div>
-                <p class="text-center text-xs text-gray-400 mt-4">시대별 독도 관련 주요 사건 및 문헌 분포</p>
             </div>
         </div>
     </section>
 
-    <!-- Interactive Navigation -->
+    <!-- Navigation -->
     <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 py-4 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 flex justify-between items-center">
-            <!-- Home Button Added Here -->
             <a href="index.html" class="home-btn flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-200 text-slate-700 font-medium">
                 <span class="text-xl">⌂</span>
                 <span class="text-sm">홈으로</span>
             </a>
             
-            <div class="flex space-x-2 justify-center">
-                <button onclick="scrollToYear(1454)" class="px-4 py-2 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition">전근대</button>
-                <button onclick="scrollToYear(1877)" class="px-4 py-2 rounded-full text-xs font-bold bg-amber-100 text-amber-700 hover:bg-amber-200 transition">근대</button>
-                <button onclick="scrollToYear(1946)" class="px-4 py-2 rounded-full text-xs font-bold bg-blue-100 text-blue-700 hover:bg-blue-200 transition">현대</button>
+            <div class="flex space-x-2">
+                <button onclick="scrollToYear(1454)" class="px-3 md:px-4 py-2 rounded-full text-[10px] md:text-xs font-bold bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition">전근대</button>
+                <button onclick="scrollToYear(1877)" class="px-3 md:px-4 py-2 rounded-full text-[10px] md:text-xs font-bold bg-amber-100 text-amber-700 hover:bg-amber-200 transition">근대</button>
+                <button onclick="scrollToYear(1946)" class="px-3 md:px-4 py-2 rounded-full text-[10px] md:text-xs font-bold bg-blue-100 text-blue-700 hover:bg-blue-200 transition">현대</button>
             </div>
-            
-            <span class="font-bold text-slate-800 hidden lg:block serif text-sm">DOKDO ARCHIVE</span>
         </div>
     </nav>
 
-    <!-- Timeline Content -->
+    <!-- Timeline Body -->
     <section class="max-w-6xl mx-auto px-4 py-20">
-        <div class="relative timeline-line" id="timeline-body">
-            <!-- Timeline items injected here -->
-        </div>
+        <div class="relative timeline-line" id="timeline-body"></div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-slate-900 text-gray-500 py-16 px-4">
-        <div class="max-w-4xl mx-auto text-center">
-            <h3 class="serif text-white text-xl mb-4">대한민국의 아름다운 영토, 독도</h3>
-            <p class="text-sm mb-8 leading-relaxed">
-                본 아카이브는 역사적 사실과 공신력 있는 사료를 바탕으로 제작되었습니다.<br>
-                우리의 관심이 독도를 지키는 가장 큰 힘입니다.
-            </p>
-            <div class="text-[10px] uppercase tracking-widest text-gray-600">
-                Data from Sejong Sillok Jiriji, SCAPIN 677, and more.
-            </div>
-        </div>
+    <footer class="bg-slate-900 text-gray-500 py-16 text-center">
+        <p class="text-sm">ⓒ 독도 영유권 역사 아카이브</p>
     </footer>
 
     <script>
@@ -220,28 +182,21 @@
             { year: 2011, era: "현대", title: "일본 교과서 왜곡", desc: "검정 교과서에 독도 영유권을 주장하는 기술을 강화하여 미래 세대를 선동함." }
         ];
 
-        const eraColors = {
-            "전근대": "emerald",
-            "근대": "amber",
-            "현대": "blue"
-        };
+        const eraColors = { "전근대": "emerald", "근대": "amber", "현대": "blue" };
 
         function initTimeline() {
             const container = document.getElementById('timeline-body');
-            
             historyEvents.forEach((event, index) => {
                 const isLeft = index % 2 === 0;
                 const color = eraColors[event.era];
-                
                 const item = document.createElement('div');
                 item.id = `year-${event.year}`;
                 item.className = `reveal relative mb-24 flex items-center w-full ${isLeft ? 'md:flex-row-reverse' : 'md:flex-row'}`;
-                
                 item.innerHTML = `
                     <div class="hidden md:block w-1/2"></div>
                     <div class="timeline-dot bg-${color}-500"></div>
                     <div class="w-full md:w-1/2 ${isLeft ? 'card-left' : 'card-right'}">
-                        <div class="bg-white p-6 rounded-3xl shadow-lg border border-gray-50 hover:shadow-xl transition-shadow cursor-default group">
+                        <div class="bg-white p-6 rounded-3xl shadow-lg border border-gray-50 hover:shadow-xl transition-shadow group">
                             <div class="flex items-center space-x-2 mb-2 ${isLeft ? 'md:flex-row-reverse md:space-x-reverse' : ''}">
                                 <span class="text-3xl font-black serif text-${color}-600">${event.year}</span>
                                 <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-${color}-100 text-${color}-700 uppercase">${event.era}</span>
@@ -255,13 +210,8 @@
             });
 
             const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                    }
-                });
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
             }, { threshold: 0.1 });
-
             document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
         }
 
@@ -270,16 +220,14 @@
                 acc[curr.era] = (acc[curr.era] || 0) + 1;
                 return acc;
             }, {});
-
             const ctx = document.getElementById('historyChart').getContext('2d');
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['전근대(확립)', '근대(침탈)', '현대(수호)'],
+                    labels: ['전근대', '근대', '현대'],
                     datasets: [{
                         data: [counts['전근대'], counts['근대'], counts['현대']],
                         backgroundColor: ['#10b981', '#f59e0b', '#3b82f6'],
-                        hoverOffset: 15,
                         borderRadius: 10,
                         borderWidth: 0
                     }]
@@ -287,15 +235,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 20, font: { weight: 'bold' } } },
-                        tooltip: {
-                            backgroundColor: '#1e293b',
-                            padding: 15,
-                            cornerRadius: 12,
-                            titleFont: { size: 14, family: 'Noto Serif KR' }
-                        }
-                    },
+                    plugins: { legend: { position: 'bottom' } },
                     cutout: '70%'
                 }
             });
@@ -305,22 +245,11 @@
             const el = document.getElementById(`year-${year}`);
             if (el) {
                 const offset = 100;
-                const bodyRect = document.body.getBoundingClientRect().top;
-                const elementRect = el.getBoundingClientRect().top;
-                const elementPosition = elementRect - bodyRect;
-                const offsetPosition = elementPosition - offset;
-
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                });
+                window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - offset, behavior: 'smooth' });
             }
         }
 
-        window.onload = () => {
-            initTimeline();
-            initChart();
-        };
+        window.onload = () => { initTimeline(); initChart(); };
     </script>
 </body>
 </html>
